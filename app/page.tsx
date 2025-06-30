@@ -215,11 +215,80 @@ export default function ArabicSarfGame() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [bombExploded, setBombExploded] = useState(false);
   const [showBombWarning, setShowBombWarning] = useState(false);
+  const [gameMode, setGameMode] = useState<'sequential' | 'word-random' | 'fully-random'>('sequential');
+  const [questionQueue, setQuestionQueue] = useState<{wordIndex: number, formIndex: number}[]>([]);
+  const [currentQueueIndex, setCurrentQueueIndex] = useState(0);
+  const [wordOrder, setWordOrder] = useState<number[]>([]);
 
-  const currentWord = wordsData[currentWordIndex];
-  const formKeys = Object.keys(currentWord.forms);
-  const currentFormKey = formKeys[currentFormIndex];
+  // Initialize question queue based on game mode
+  const generateQuestionQueue = () => {
+    const queue = [];
+    
+    if (gameMode === 'sequential') {
+      // Sequential: words in order, forms in order
+      for (let wordIndex = 0; wordIndex < wordsData.length; wordIndex++) {
+        const formKeys = Object.keys(wordsData[wordIndex].forms);
+        for (let formIndex = 0; formIndex < formKeys.length; formIndex++) {
+          queue.push({ wordIndex, formIndex });
+        }
+      }
+    } else if (gameMode === 'word-random') {
+      // Word-random: words in random order, but all forms for each word together
+      const shuffledWordIndices = Array.from({ length: wordsData.length }, (_, i) => i)
+        .sort(() => Math.random() - 0.5);
+      
+      for (const wordIndex of shuffledWordIndices) {
+        const formKeys = Object.keys(wordsData[wordIndex].forms);
+        // Shuffle forms within each word
+        const shuffledFormIndices = Array.from({ length: formKeys.length }, (_, i) => i)
+          .sort(() => Math.random() - 0.5);
+        
+        for (const formIndex of shuffledFormIndices) {
+          queue.push({ wordIndex, formIndex });
+        }
+      }
+    } else if (gameMode === 'fully-random') {
+      // Fully random: everything shuffled together
+      for (let wordIndex = 0; wordIndex < wordsData.length; wordIndex++) {
+        const formKeys = Object.keys(wordsData[wordIndex].forms);
+        for (let formIndex = 0; formIndex < formKeys.length; formIndex++) {
+          queue.push({ wordIndex, formIndex });
+        }
+      }
+      queue.sort(() => Math.random() - 0.5);
+    }
+    
+    return queue;
+  };
+
+  // Get current question based on mode
+  const getCurrentQuestion = () => {
+    if (gameMode !== 'sequential' && questionQueue.length > 0) {
+      const current = questionQueue[currentQueueIndex];
+      return {
+        wordIndex: current.wordIndex,
+        formIndex: current.formIndex,
+        word: wordsData[current.wordIndex],
+        formKey: Object.keys(wordsData[current.wordIndex].forms)[current.formIndex]
+      };
+    } else {
+      return {
+        wordIndex: currentWordIndex,
+        formIndex: currentFormIndex,
+        word: wordsData[currentWordIndex],
+        formKey: Object.keys(wordsData[currentWordIndex].forms)[currentFormIndex]
+      };
+    }
+  };
+
+  const currentQuestion = getCurrentQuestion();
+  const currentWord = currentQuestion.word;
+  const currentFormKey = currentQuestion.formKey;
   const correctAnswer = currentWord.forms[currentFormKey as keyof typeof currentWord.forms];
+
+  // Calculate total forms per word (all words have same structure)
+  const formsPerWord = Object.keys(wordsData[0].forms).length;
+  const totalQuestionCount = wordsData.length * formsPerWord;
 
   // Timer effect
   useEffect(() => {
@@ -249,10 +318,10 @@ export default function ArabicSarfGame() {
       const shuffled = allChoices.sort(() => Math.random() - 0.5);
       setChoices(shuffled);
       // Reset timer for new question
-      setTimeLeft(10);
+      setTimeLeft(15);
       setShowBombWarning(false);
     }
-  }, [currentWordIndex, currentFormIndex, gameComplete, bombExploded]);
+  }, [currentWordIndex, currentFormIndex, currentQueueIndex, gameComplete, bombExploded, gameMode]);
 
   const handleAnswerSelect = (answer: string) => {
     if (showResult) return;
@@ -279,32 +348,86 @@ export default function ArabicSarfGame() {
     setSelectedAnswer(null);
     setShowResult(false);
     
-    // Move to next form
-    if (currentFormIndex < formKeys.length - 1) {
-      setCurrentFormIndex(prev => prev + 1);
-    } else {
-      // Move to next word
-      if (currentWordIndex < wordsData.length - 1) {
-        setCurrentWordIndex(prev => prev + 1);
-        setCurrentFormIndex(0);
+    if (gameMode !== 'sequential') {
+      // Move to next question in queue
+      if (currentQueueIndex < questionQueue.length - 1) {
+        setCurrentQueueIndex(prev => prev + 1);
       } else {
         // Game complete
         setGameComplete(true);
       }
+    } else {
+      // Original sequential logic
+      const formKeys = Object.keys(wordsData[currentWordIndex].forms);
+      if (currentFormIndex < formKeys.length - 1) {
+        setCurrentFormIndex(prev => prev + 1);
+      } else {
+        // Move to next word
+        if (currentWordIndex < wordsData.length - 1) {
+          setCurrentWordIndex(prev => prev + 1);
+          setCurrentFormIndex(0);
+        } else {
+          // Game complete
+          setGameComplete(true);
+        }
+      }
     }
   };
 
-  const resetGame = () => {
-    setCurrentWordIndex(0);
-    setCurrentFormIndex(0);
+  const changeGameMode = (newMode: 'sequential' | 'word-random' | 'fully-random') => {
+    setGameMode(newMode);
+    
+    if (newMode !== 'sequential') {
+      // Generate queue for random modes
+      const newQueue = generateQuestionQueue();
+      setQuestionQueue(newQueue);
+      setCurrentQueueIndex(0);
+    } else {
+      // Reset to sequential mode
+      setCurrentWordIndex(0);
+      setCurrentFormIndex(0);
+      setCurrentQueueIndex(0);
+    }
+    
+    // Reset other states
     setScore(0);
     setTotalQuestions(0);
     setSelectedAnswer(null);
     setShowResult(false);
     setGameComplete(false);
-    setTimeLeft(10);
+    setTimeLeft(15);
     setBombExploded(false);
     setShowBombWarning(false);
+  };
+
+  const resetGame = () => {
+    if (gameMode !== 'sequential') {
+      // Generate new queue for random modes
+      const newQueue = generateQuestionQueue();
+      setQuestionQueue(newQueue);
+      setCurrentQueueIndex(0);
+    } else {
+      setCurrentWordIndex(0);
+      setCurrentFormIndex(0);
+    }
+    
+    setScore(0);
+    setTotalQuestions(0);
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setGameComplete(false);
+    setTimeLeft(15);
+    setBombExploded(false);
+    setShowBombWarning(false);
+  };
+
+  // Calculate progress based on current mode
+  const getProgress = () => {
+    if (gameMode !== 'sequential' && questionQueue.length > 0) {
+      return (currentQueueIndex / questionQueue.length) * 100;
+    } else {
+      return ((currentWordIndex * formsPerWord + currentFormIndex) / totalQuestionCount) * 100;
+    }
   };
 
   // Bomb explosion screen
@@ -376,9 +499,7 @@ export default function ArabicSarfGame() {
     <div className="min-h-screen bg-gray-50 p-4">
       <style dangerouslySetInnerHTML={{ __html: fontLink }} />
       
-        {/* Add top margin to account for fixed timer bar */}
-        <div className="">
-
+      <div className="">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 border-2 border-gray-100">
           <div className="flex justify-between items-center mb-6">
@@ -390,9 +511,47 @@ export default function ArabicSarfGame() {
                 <span className="text-green-600">{score}</span> / {totalQuestions}
               </div>
             </div>
-            <div className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full border border-yellow-300">
-              <div className="text-sm font-bold" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Baab II تَفْعِيل
+            <div className="flex items-center space-x-3">
+              {/* Game Mode Buttons */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => changeGameMode('sequential')}
+                  className={`px-3 py-2 rounded-full text-xs font-bold transition-colors duration-200 ${
+                    gameMode === 'sequential'
+                      ? 'bg-blue-500 text-white shadow-lg' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  📋 Sequential
+                </button>
+                <button
+                  onClick={() => changeGameMode('word-random')}
+                  className={`px-3 py-2 rounded-full text-xs font-bold transition-colors duration-200 ${
+                    gameMode === 'word-random'
+                      ? 'bg-purple-500 text-white shadow-lg' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  🔀 Word Random
+                </button>
+                <button
+                  onClick={() => changeGameMode('fully-random')}
+                  className={`px-3 py-2 rounded-full text-xs font-bold transition-colors duration-200 ${
+                    gameMode === 'fully-random'
+                      ? 'bg-red-500 text-white shadow-lg' 
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  🎲 Fully Random
+                </button>
+              </div>
+              <div className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full border border-yellow-300">
+                <div className="text-sm font-bold" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  Baab II تَفْعِيل
+                </div>
               </div>
             </div>
           </div>
@@ -439,7 +598,7 @@ export default function ArabicSarfGame() {
             <div 
               className="bg-green-500 h-4 rounded-full transition-all duration-500"
               style={{ 
-                width: `${((currentWordIndex * formKeys.length + currentFormIndex) / (wordsData.length * formKeys.length)) * 100}%` 
+                width: `${getProgress()}%` 
               }}
             ></div>
           </div>
