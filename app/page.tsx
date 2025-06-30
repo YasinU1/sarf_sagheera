@@ -9,160 +9,6 @@ const fontLink = `
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 `;
 
-// Word data based on the screenshots and additional vocabulary
-const wordsData = [
-  {
-    english: "to reveal, to send down",
-    root: "نزل",
-    forms: {
-      "الماضي المعلوم": "نَزَّلَ",
-      "المضارع المعلوم": "يُنَزِّلُ", 
-      "الماضي المجهول": "نُزِّلَ",
-      "المضارع المجهول": "يُنَزَّلُ",
-      "المصدر": "تَنْزِيلاً",
-      "الأمر": "نَزِّلْ",
-      "النهي": "لا تُنَزِّلْ",
-      "اسم الفاعل": "مُنَزِّلٌ",
-      "اسم المفعول": "مُنَزَّلٌ"
-    }
-  },
-  {
-    english: "to punish",
-    root: "عذب",
-    forms: {
-      "الماضي المعلوم": "عَذَّبَ",
-      "المضارع المعلوم": "يُعَذِّبُ", 
-      "الماضي المجهول": "عُذِّبَ",
-      "المضارع المجهول": "يُعَذَّبُ",
-      "المصدر": "تَعْذِيباً",
-      "الأمر": "عَذِّبْ",
-      "النهي": "لا تُعَذِّبْ",
-      "اسم الفاعل": "مُعَذِّبٌ",
-      "اسم المفعول": "مُعَذَّبٌ"
-    }
-  },
-  {
-    english: "to put forth",
-    root: "قدم", 
-    forms: {
-      "الماضي المعلوم": "قَدَّمَ",
-      "المضارع المعلوم": "يُقَدِّمُ",
-      "الماضي المجهول": "قُدِّمَ", 
-      "المضارع المجهول": "يُقَدَّمُ",
-      "المصدر": "تَقْدِيماً",
-      "الأمر": "قَدِّمْ",
-      "النهي": "لا تُقَدِّمْ",
-      "اسم الفاعل": "مُقَدِّمٌ",
-      "اسم المفعول": "مُقَدَّمٌ"
-    }
-  },
-  {
-    english: "to believe",
-    root: "صدق",
-    forms: {
-      "الماضي المعلوم": "صَدَّقَ",
-      "المضارع المعلوم": "يُصَدِّقُ",
-      "الماضي المجهول": "صُدِّقَ",
-      "المضارع المجهول": "يُصَدَّقُ",
-      "المصدر": "تَصْدِيقاً",
-      "الأمر": "صَدِّقْ",
-      "النهي": "لا تُصَدِّقْ",
-      "اسم الفاعل": "مُصَدِّقٌ",
-      "اسم المفعول": "مُصَدَّقٌ"
-    }
-  },
-  {
-    english: "to teach",
-    root: "علم",
-    forms: {
-      "الماضي المعلوم": "عَلَّمَ",
-      "المضارع المعلوم": "يُعَلِّمُ",
-      "الماضي المجهول": "عُلِّمَ",
-      "المضارع المجهول": "يُعَلَّمُ",
-      "المصدر": "تَعْلِيماً",
-      "الأمر": "عَلِّمْ",
-      "النهي": "لا تُعَلِّمْ",
-      "اسم الفاعل": "مُعَلِّمٌ",
-      "اسم المفعول": "مُعَلَّمٌ"
-    }
-  },
-  {
-    english: "to reject",
-    root: "كذب",
-    forms: {
-      "الماضي المعلوم": "كَذَّبَ",
-      "المضارع المعلوم": "يُكَذِّبُ",
-      "الماضي المجهول": "كُذِّبَ",
-      "المضارع المجهول": "يُكَذَّبُ",
-      "المصدر": "تَكْذِيباً",
-      "الأمر": "كَذِّبْ",
-      "النهي": "لا تُكَذِّبْ",
-      "اسم الفاعل": "مُكَذِّبٌ",
-      "اسم المفعول": "مُكَذَّبٌ"
-    }
-  },
-  {
-    english: "to remind",
-    root: "ذكر",
-    forms: {
-      "الماضي المعلوم": "ذَكَّرَ",
-      "المضارع المعلوم": "يُذَكِّرُ",
-      "الماضي المجهول": "ذُكِّرَ",
-      "المضارع المجهول": "يُذَكَّرُ",
-      "المصدر": "تَذْكِيراً",
-      "الأمر": "ذَكِّرْ",
-      "النهي": "لا تُذَكِّرْ",
-      "اسم الفاعل": "مُذَكِّرٌ",
-      "اسم المفعول": "مُذَكَّرٌ"
-    }
-  },
-  {
-    english: "to think",
-    root: "فكر",
-    forms: {
-      "الماضي المعلوم": "فَكَّرَ",
-      "المضارع المعلوم": "يُفَكِّرُ",
-      "الماضي المجهول": "فُكِّرَ",
-      "المضارع المجهول": "يُفَكَّرُ",
-      "المصدر": "تَفْكِيراً",
-      "الأمر": "فَكِّرْ",
-      "النهي": "لا تُفَكِّرْ",
-      "اسم الفاعل": "مُفَكِّرٌ",
-      "اسم المفعول": "مُفَكَّرٌ"
-    }
-  },
-  {
-    english: "to clean",
-    root: "نظف",
-    forms: {
-      "الماضي المعلوم": "نَظَّفَ",
-      "المضارع المعلوم": "يُنَظِّفُ",
-      "الماضي المجهول": "نُظِّفَ",
-      "المضارع المجهول": "يُنَظَّفُ",
-      "المصدر": "تَنْظِيفاً",
-      "الأمر": "نَظِّفْ",
-      "النهي": "لا تُنَظِّفْ",
-      "اسم الفاعل": "مُنَظِّفٌ",
-      "اسم المفعول": "مُنَظَّفٌ"
-    }
-  },
-  {
-    english: "to smoke",
-    root: "دخن",
-    forms: {
-      "الماضي المعلوم": "دَخَّنَ",
-      "المضارع المعلوم": "يُدَخِّنُ",
-      "الماضي المجهول": "دُخِّنَ",
-      "المضارع المجهول": "يُدَخَّنُ",
-      "المصدر": "تَدْخِيناً",
-      "الأمر": "دَخِّنْ",
-      "النهي": "لا تُدَخِّنْ",
-      "اسم الفاعل": "مُدَخِّنٌ",
-      "اسم المفعول": "مُدَخَّنٌ"
-    }
-  }
-];
-
 // Form labels in Arabic
 const formLabels = {
   "الماضي المعلوم": "Past Active",
@@ -176,10 +22,19 @@ const formLabels = {
   "اسم المفعول": "Passive Participle"
 };
 
+// Define types for better type safety
+interface WordData {
+  english: string;
+  root: string;
+  forms: {
+    [key: string]: string;
+  };
+}
+
 // Generate wrong answers by mixing up the forms
-const generateWrongAnswers = (correctAnswer: string, currentWord: any, currentForm: string) => {
-  const wrongAnswers = [];
-  const allForms = Object.values(currentWord.forms) as string[];
+const generateWrongAnswers = (correctAnswer: string, currentWord: WordData, currentForm: string, wordsData: WordData[]): string[] => {
+  const wrongAnswers: string[] = [];
+  const allForms = Object.values(currentWord.forms);
   
   // Add other forms from the same word as wrong answers
   for (const form of allForms) {
@@ -192,7 +47,7 @@ const generateWrongAnswers = (correctAnswer: string, currentWord: any, currentFo
   if (wrongAnswers.length < 3) {
     for (const word of wordsData) {
       if (word !== currentWord) {
-        const otherWordForm = word.forms[currentForm as keyof typeof word.forms];
+        const otherWordForm = word.forms[currentForm];
         if (otherWordForm && !wrongAnswers.includes(otherWordForm) && wrongAnswers.length < 3) {
           wrongAnswers.push(otherWordForm);
         }
@@ -204,6 +59,9 @@ const generateWrongAnswers = (correctAnswer: string, currentWord: any, currentFo
 };
 
 export default function ArabicSarfGame() {
+  const [wordsData, setWordsData] = useState<WordData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentFormIndex, setCurrentFormIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -218,11 +76,35 @@ export default function ArabicSarfGame() {
   const [gameMode, setGameMode] = useState<'sequential' | 'word-random' | 'fully-random'>('sequential');
   const [questionQueue, setQuestionQueue] = useState<{wordIndex: number, formIndex: number}[]>([]);
   const [currentQueueIndex, setCurrentQueueIndex] = useState(0);
-  const [wordOrder, setWordOrder] = useState<number[]>([]);
+
+  // Load data from external JSON file
+  useEffect(() => {
+    const loadWordsData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('./data/tafeel.json');
+        if (!response.ok) {
+          throw new Error(`Failed to load data: ${response.statusText}`);
+        }
+        const data: WordData[] = await response.json();
+        setWordsData(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error loading words data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadWordsData();
+  }, []);
 
   // Initialize question queue based on game mode
-  const generateQuestionQueue = () => {
-    const queue = [];
+  const generateQuestionQueue = (): {wordIndex: number, formIndex: number}[] => {
+    if (wordsData.length === 0) return [];
+    
+    const queue: {wordIndex: number, formIndex: number}[] = [];
     
     if (gameMode === 'sequential') {
       // Sequential: words in order, forms in order
@@ -262,37 +144,56 @@ export default function ArabicSarfGame() {
   };
 
   // Get current question based on mode
-  const getCurrentQuestion = () => {
+  const getCurrentQuestion = (): {
+    wordIndex: number;
+    formIndex: number;
+    word: WordData;
+    formKey: string;
+  } | null => {
+    if (wordsData.length === 0) return null;
+    
     if (gameMode !== 'sequential' && questionQueue.length > 0) {
       const current = questionQueue[currentQueueIndex];
+      if (!current || !wordsData[current.wordIndex]) return null;
+      
+      const formKeys = Object.keys(wordsData[current.wordIndex].forms);
+      const formKey = formKeys[current.formIndex];
+      if (!formKey) return null;
+      
       return {
         wordIndex: current.wordIndex,
         formIndex: current.formIndex,
         word: wordsData[current.wordIndex],
-        formKey: Object.keys(wordsData[current.wordIndex].forms)[current.formIndex]
+        formKey
       };
     } else {
+      if (!wordsData[currentWordIndex]) return null;
+      
+      const formKeys = Object.keys(wordsData[currentWordIndex].forms);
+      const formKey = formKeys[currentFormIndex];
+      if (!formKey) return null;
+      
       return {
         wordIndex: currentWordIndex,
         formIndex: currentFormIndex,
         word: wordsData[currentWordIndex],
-        formKey: Object.keys(wordsData[currentWordIndex].forms)[currentFormIndex]
+        formKey
       };
     }
   };
 
   const currentQuestion = getCurrentQuestion();
-  const currentWord = currentQuestion.word;
-  const currentFormKey = currentQuestion.formKey;
-  const correctAnswer = currentWord.forms[currentFormKey as keyof typeof currentWord.forms];
+  const currentWord = currentQuestion?.word;
+  const currentFormKey = currentQuestion?.formKey;
+  const correctAnswer = currentWord && currentFormKey ? currentWord.forms[currentFormKey] : undefined;
 
   // Calculate total forms per word (all words have same structure)
-  const formsPerWord = Object.keys(wordsData[0].forms).length;
+  const formsPerWord = wordsData.length > 0 ? Object.keys(wordsData[0].forms).length : 0;
   const totalQuestionCount = wordsData.length * formsPerWord;
 
   // Timer effect
   useEffect(() => {
-    if (!showResult && !gameComplete && !bombExploded && timeLeft > 0) {
+    if (!showResult && !gameComplete && !bombExploded && timeLeft > 0 && !loading) {
       const timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
         
@@ -303,16 +204,16 @@ export default function ArabicSarfGame() {
       }, 1000);
 
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !showResult && !bombExploded) {
+    } else if (timeLeft === 0 && !showResult && !bombExploded && !loading) {
       // Bomb explodes!
       setBombExploded(true);
     }
-  }, [timeLeft, showResult, gameComplete, bombExploded]);
+  }, [timeLeft, showResult, gameComplete, bombExploded, loading]);
 
   // Generate choices when question changes
   useEffect(() => {
-    if (!gameComplete && !bombExploded) {
-      const wrongAnswers = generateWrongAnswers(correctAnswer, currentWord, currentFormKey);
+    if (!gameComplete && !bombExploded && wordsData.length > 0 && currentWord && correctAnswer && currentFormKey) {
+      const wrongAnswers = generateWrongAnswers(correctAnswer, currentWord, currentFormKey, wordsData);
       const allChoices = [correctAnswer, ...wrongAnswers];
       // Shuffle the choices
       const shuffled = allChoices.sort(() => Math.random() - 0.5);
@@ -321,7 +222,7 @@ export default function ArabicSarfGame() {
       setTimeLeft(15);
       setShowBombWarning(false);
     }
-  }, [currentWordIndex, currentFormIndex, currentQueueIndex, gameComplete, bombExploded, gameMode]);
+  }, [currentWordIndex, currentFormIndex, currentQueueIndex, gameComplete, bombExploded, gameMode, wordsData, currentWord, correctAnswer, currentFormKey]);
 
   const handleAnswerSelect = (answer: string) => {
     if (showResult) return;
@@ -430,6 +331,52 @@ export default function ArabicSarfGame() {
     }
   };
 
+  // Loading screen
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <style dangerouslySetInnerHTML={{ __html: fontLink }} />
+        <div className="bg-white rounded-3xl shadow-xl p-12 max-w-lg w-full text-center border-2 border-gray-100">
+          <div className="text-6xl mb-8">📚</div>
+          <h2 className="text-3xl font-bold text-gray-800 mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Loading Arabic Sarf Data...
+          </h2>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error screen
+  if (error) {
+    return (
+      <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
+        <style dangerouslySetInnerHTML={{ __html: fontLink }} />
+        <div className="bg-white rounded-3xl shadow-xl p-12 max-w-lg w-full text-center border-2 border-red-200">
+          <div className="text-6xl mb-8">⚠️</div>
+          <h2 className="text-3xl font-bold text-red-600 mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Error Loading Data
+          </h2>
+          <div className="bg-red-50 rounded-2xl p-6 mb-8 border border-red-200">
+            <div className="text-red-700 mb-4">
+              {error}
+            </div>
+            <div className="text-sm text-red-600">
+              Please make sure the file <code>./data/tafeel.json</code> exists and is accessible.
+            </div>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-10 rounded-2xl transition-colors duration-300 shadow-lg"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Bomb explosion screen
   if (bombExploded) {
     return (
@@ -490,6 +437,19 @@ export default function ArabicSarfGame() {
           >
             Play Again
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render the game until we have data
+  if (wordsData.length === 0 || !currentWord || !correctAnswer) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <style dangerouslySetInnerHTML={{ __html: fontLink }} />
+        <div className="bg-white rounded-3xl shadow-xl p-12 max-w-lg w-full text-center border-2 border-gray-100">
+          <div className="text-6xl mb-8">📚</div>
+          <div className="text-gray-600">Preparing game...</div>
         </div>
       </div>
     );
