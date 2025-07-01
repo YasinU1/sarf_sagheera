@@ -73,7 +73,7 @@ export default function ArabicSarfGame() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [bombExploded, setBombExploded] = useState(false);
   const [showBombWarning, setShowBombWarning] = useState(false);
-  const [gameMode, setGameMode] = useState<'sequential' | 'word-random' | 'fully-random'>('sequential');
+  const [gameMode, setGameMode] = useState<'sequential' | 'random-verbs' | 'fully-random'>('sequential');
   const [questionQueue, setQuestionQueue] = useState<{wordIndex: number, formIndex: number}[]>([]);
   const [currentQueueIndex, setCurrentQueueIndex] = useState(0);
 
@@ -114,29 +114,28 @@ export default function ArabicSarfGame() {
           queue.push({ wordIndex, formIndex });
         }
       }
-    } else if (gameMode === 'word-random') {
-      // Word-random: words in random order, but all forms for each word together
+    } else if (gameMode === 'random-verbs') {
+      // Random verbs but all forms of each verb together
+      // First, create a random order of verb indices
       const shuffledWordIndices = Array.from({ length: wordsData.length }, (_, i) => i)
         .sort(() => Math.random() - 0.5);
       
+      // For each randomly ordered verb, add all its forms in order
       for (const wordIndex of shuffledWordIndices) {
         const formKeys = Object.keys(wordsData[wordIndex].forms);
-        // Shuffle forms within each word
-        const shuffledFormIndices = Array.from({ length: formKeys.length }, (_, i) => i)
-          .sort(() => Math.random() - 0.5);
-        
-        for (const formIndex of shuffledFormIndices) {
+        for (let formIndex = 0; formIndex < formKeys.length; formIndex++) {
           queue.push({ wordIndex, formIndex });
         }
       }
     } else if (gameMode === 'fully-random') {
-      // Fully random: everything shuffled together
+      // Fully random: any verb, any form, completely random order
       for (let wordIndex = 0; wordIndex < wordsData.length; wordIndex++) {
         const formKeys = Object.keys(wordsData[wordIndex].forms);
         for (let formIndex = 0; formIndex < formKeys.length; formIndex++) {
           queue.push({ wordIndex, formIndex });
         }
       }
+      // Shuffle everything completely randomly
       queue.sort(() => Math.random() - 0.5);
     }
     
@@ -275,7 +274,7 @@ export default function ArabicSarfGame() {
     }
   };
 
-  const changeGameMode = (newMode: 'sequential' | 'word-random' | 'fully-random') => {
+  const changeGameMode = (newMode: 'sequential' | 'random-verbs' | 'fully-random') => {
     setGameMode(newMode);
     
     if (newMode !== 'sequential') {
@@ -486,15 +485,15 @@ export default function ArabicSarfGame() {
                   📋 Sequential
                 </button>
                 <button
-                  onClick={() => changeGameMode('word-random')}
+                  onClick={() => changeGameMode('random-verbs')}
                   className={`px-3 py-2 rounded-full text-xs font-bold transition-colors duration-200 ${
-                    gameMode === 'word-random'
+                    gameMode === 'random-verbs'
                       ? 'bg-purple-500 text-white shadow-lg' 
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                   style={{ fontFamily: 'Inter, sans-serif' }}
                 >
-                  🔀 Word Random
+                  🔀 Random Verbs
                 </button>
                 <button
                   onClick={() => changeGameMode('fully-random')}
