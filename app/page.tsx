@@ -22,6 +22,30 @@ const formLabels = {
   "اسم المفعول": "Passive Participle"
 };
 
+// Baab configurations
+const baabConfigs = {
+  2: { 
+    file: './data/tafeel.json', 
+    name: 'Baab II تَفْعِيل',
+    color: 'yellow'
+  },
+  3: { 
+    file: './data/mufala.json', 
+    name: 'Baab III مُفَاعَلَة',
+    color: 'green'
+  },
+  4: { 
+    file: './data/ifala.json', 
+    name: 'Baab IV إِفْعَال',
+    color: 'purple'
+  },
+  5: { 
+    file: './data/tafula.json', 
+    name: 'Baab V تَفَعُّل',
+    color: 'blue'
+  }
+};
+
 // Define types for better type safety
 interface WordData {
   english: string;
@@ -59,6 +83,8 @@ const generateWrongAnswers = (correctAnswer: string, currentWord: WordData, curr
 };
 
 export default function ArabicSarfGame() {
+  const [currentBaab, setCurrentBaab] = useState<number>(2);
+  const [showBaabDropdown, setShowBaabDropdown] = useState(false);
   const [wordsData, setWordsData] = useState<WordData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,12 +103,17 @@ export default function ArabicSarfGame() {
   const [questionQueue, setQuestionQueue] = useState<{wordIndex: number, formIndex: number}[]>([]);
   const [currentQueueIndex, setCurrentQueueIndex] = useState(0);
 
-  // Load data from external JSON file
+  // Load data from external JSON file based on current baab
   useEffect(() => {
     const loadWordsData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('./data/tafeel.json');
+        const baabConfig = baabConfigs[currentBaab as keyof typeof baabConfigs];
+        if (!baabConfig) {
+          throw new Error(`Invalid baab: ${currentBaab}`);
+        }
+        
+        const response = await fetch(baabConfig.file);
         if (!response.ok) {
           throw new Error(`Failed to load data: ${response.statusText}`);
         }
@@ -98,7 +129,12 @@ export default function ArabicSarfGame() {
     };
 
     loadWordsData();
-  }, []);
+  }, [currentBaab]);
+
+  // Reset game when baab changes
+  useEffect(() => {
+    resetGame();
+  }, [currentBaab]);
 
   // Initialize question queue based on game mode
   const generateQuestionQueue = (): {wordIndex: number, formIndex: number}[] => {
@@ -274,6 +310,11 @@ export default function ArabicSarfGame() {
     }
   };
 
+  const handleBaabChange = (newBaab: number) => {
+    setCurrentBaab(newBaab);
+    setShowBaabDropdown(false);
+  };
+
   const changeGameMode = (newMode: 'sequential' | 'random-verbs' | 'fully-random') => {
     setGameMode(newMode);
     
@@ -330,6 +371,17 @@ export default function ArabicSarfGame() {
     }
   };
 
+  // Get color classes for current baab
+  const getBaabColorClasses = (color: string) => {
+    const colors = {
+      yellow: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      green: 'bg-green-100 text-green-800 border-green-300',
+      purple: 'bg-purple-100 text-purple-800 border-purple-300',
+      blue: 'bg-blue-100 text-blue-800 border-blue-300'
+    };
+    return colors[color as keyof typeof colors] || colors.yellow;
+  };
+
   // Loading screen
   if (loading) {
     return (
@@ -338,7 +390,7 @@ export default function ArabicSarfGame() {
         <div className="bg-white rounded-3xl shadow-xl p-12 max-w-lg w-full text-center border-2 border-gray-100">
           <div className="text-6xl mb-8">📚</div>
           <h2 className="text-3xl font-bold text-gray-800 mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Loading Arabic Sarf Data...
+            Loading {baabConfigs[currentBaab as keyof typeof baabConfigs]?.name}...
           </h2>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
         </div>
@@ -361,7 +413,7 @@ export default function ArabicSarfGame() {
               {error}
             </div>
             <div className="text-sm text-red-600">
-              Please make sure the file <code>./data/tafeel.json</code> exists and is accessible.
+              Please make sure the file <code>{baabConfigs[currentBaab as keyof typeof baabConfigs]?.file}</code> exists and is accessible.
             </div>
           </div>
           <button
@@ -454,6 +506,8 @@ export default function ArabicSarfGame() {
     );
   }
 
+  const currentBaabConfig = baabConfigs[currentBaab as keyof typeof baabConfigs];
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <style dangerouslySetInnerHTML={{ __html: fontLink }} />
@@ -507,10 +561,43 @@ export default function ArabicSarfGame() {
                   🎲 Fully Random
                 </button>
               </div>
-              <div className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full border border-yellow-300">
-                <div className="text-sm font-bold" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Baab II تَفْعِيل
-                </div>
+              {/* Baab Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowBaabDropdown(!showBaabDropdown)}
+                  className={`px-4 py-2 rounded-full border text-sm font-bold transition-all duration-200 flex items-center space-x-2 ${getBaabColorClasses(currentBaabConfig.color)}`}
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  <span>{currentBaabConfig.name}</span>
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${showBaabDropdown ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {/* Dropdown Menu */}
+                {showBaabDropdown && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border-2 border-gray-100 z-50">
+                    {Object.entries(baabConfigs).map(([baabNum, config]) => (
+                      <button
+                        key={baabNum}
+                        onClick={() => handleBaabChange(parseInt(baabNum))}
+                        className={`w-full text-left px-4 py-3 text-sm font-bold transition-colors duration-200 first:rounded-t-xl last:rounded-b-xl hover:bg-gray-50 ${
+                          currentBaab === parseInt(baabNum) 
+                            ? getBaabColorClasses(config.color)
+                            : 'text-gray-700'
+                        }`}
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        {config.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
